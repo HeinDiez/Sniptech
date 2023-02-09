@@ -1,24 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import Search from './component/search';
+import IssuesList from './component/list/issue';
+import Filter from './component/filter';
+
+
 import './App.css';
 
+
+interface Issue {
+  id: number;
+  title: string;
+  state: string;
+  created_at: string;
+  updated_at: string;
+  comments: number;
+}
+
+
 function App() {
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [filteredIssues, setFilteredIssues] = useState<Issue[]>(issues);
+
+  useEffect(() => {
+    setFilteredIssues(issues);
+  }, [issues]);
+
+  const handleFilterChange = (state: string) => {
+    if (state === 'all') {
+      setFilteredIssues(issues);
+    } else {
+      setFilteredIssues(issues.filter((issue) => issue.state === state));
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Search setData={setIssues}/>
+      <Filter onFilterChange={handleFilterChange} />
+      <div>
+        <IssuesList issues={filteredIssues}/>
+      </div>
     </div>
   );
 }
